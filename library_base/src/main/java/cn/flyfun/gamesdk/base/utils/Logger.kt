@@ -1,6 +1,5 @@
 package cn.flyfun.gamesdk.base.utils
 
-import android.os.Handler
 import cn.flyfun.support.jarvis.LogRvds
 
 /**
@@ -10,7 +9,6 @@ import cn.flyfun.support.jarvis.LogRvds
 object Logger {
 
     private const val TAG: String = "flyfun_game"
-    var handler: Handler? = null
 
     fun i(any: Any) {
         LogRvds.i(TAG, any)
@@ -34,8 +32,6 @@ object Logger {
 
     @JvmStatic
     fun logHandler(msg: String) {
-        handler?.apply {
-            LogRvds.logHandler(this, msg)
-        }
+        LogRvds.logHandler(msg)
     }
 }

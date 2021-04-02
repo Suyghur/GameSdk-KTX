@@ -2,6 +2,7 @@ package com.flyfun.demo
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
@@ -10,18 +11,20 @@ import android.os.Message
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.TextView
+import android.widget.*
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import cn.flyfun.gamesdk.base.FlyFunGame
 import cn.flyfun.gamesdk.base.entity.GameChargeInfo
 import cn.flyfun.gamesdk.base.entity.GameRoleInfo
 import cn.flyfun.gamesdk.base.internal.ICallback
+import cn.flyfun.gamesdk.base.utils.Logger
+import cn.flyfun.gamesdk.core.impl.ShareImpl
+import cn.flyfun.gamesdk.core.utils.ScreenShotUtils
 import cn.flyfun.support.encryption.Md5Utils
 import cn.flyfun.support.jarvis.Toast
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.File
 import kotlin.system.exitProcess
 
 /**
@@ -30,17 +33,32 @@ import kotlin.system.exitProcess
  */
 class DemoActivity : Activity(), View.OnClickListener {
 
-    companion object {
-        private const val APP_SECRET = "xxxx"
-    }
+    private val events = arrayListOf(
+            Item(0, "00 接口环境切换"),
+            Item(1, "01 登录"),
+            Item(2, "02 切换账号"),
+            Item(3, "03 角色创建上报"),
+            Item(4, "04 角色登录上报"),
+            Item(5, "05 角色升级上报"),
+            Item(6, "06 定额充值"),
+            Item(7, "07 绑定平台账号"),
+            Item(8, "08 打开客服中心"),
+            Item(9, "09 崩溃测试"),
+            Item(10, "10 Facebook分享测试")
+//            Item(11, "11 截屏")
+    )
 
-    private var mTextView: TextView? = null
+    private lateinit var layout: LinearLayout
+    private lateinit var mTextView: TextView
+    private lateinit var bindButton: Button
+    private lateinit var gmButton: Button
+    private lateinit var imageView: ImageView
     private var cacheRoleInfo: CacheRoleInfo.Companion.RoleInfo? = null
     private val handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 111 -> {
-                    mTextView?.apply {
+                    with(mTextView) {
                         text = text.toString() + msg.obj.toString()
                     }
                 }
@@ -67,24 +85,61 @@ class DemoActivity : Activity(), View.OnClickListener {
     }
 
     private fun initView() {
-        val layout = LinearLayout(this)
+        layout = LinearLayout(this)
         layout.orientation = LinearLayout.VERTICAL
-
-        DemoButtons.addViews(this, layout)
-
+        imageView = ImageView(this)
+        layout.addView(imageView)
+        initButton()
         mTextView = TextView(this)
-        mTextView?.apply {
+        with(mTextView) {
             text = ""
-            layout.addView(this)
+            this@DemoActivity.layout.addView(this)
         }
-
         val scrollView = ScrollView(this)
         scrollView.addView(layout)
         setContentView(scrollView)
     }
 
+    private fun initButton() {
+        for (event in events) {
+            when (event.id) {
+                7 -> {
+                    bindButton = Button(this)
+                    with(bindButton) {
+                        text = event.name
+                        tag = event.id
+                        id = event.id
+                        setOnClickListener(this@DemoActivity)
+                        visibility = View.GONE
+                        this@DemoActivity.layout.addView(this)
+                    }
+                }
+                8 -> {
+                    gmButton = Button(this)
+                    with(gmButton) {
+                        text = event.name
+                        tag = event.id
+                        id = event.id
+                        setOnClickListener(this@DemoActivity)
+                        visibility = View.GONE
+                        this@DemoActivity.layout.addView(this)
+                    }
+                }
+                else -> {
+                    with(Button(this)) {
+                        text = event.name
+                        tag = event.id
+                        id = event.id
+                        setOnClickListener(this@DemoActivity)
+                        this@DemoActivity.layout.addView(this)
+                    }
+                }
+            }
+        }
+    }
+
     override fun onClick(v: View?) {
-        mTextView?.text = ""
+        mTextView.text = ""
         v?.apply {
             when (tag as Int) {
                 0 -> EnvActivity.start(this@DemoActivity)
@@ -96,14 +151,13 @@ class DemoActivity : Activity(), View.OnClickListener {
                 2 -> FlyFunGame.getInstance().logout(this@DemoActivity, object : ICallback {
                     override fun onResult(code: Int, result: String) {
                         if (code == 0) {
-                            DemoButtons.hideBindButton()
-                            DemoButtons.hideGMButton()
-                            FlyFunGame.getInstance()
-                                .login(this@DemoActivity, false, object : ICallback {
-                                    override fun onResult(code: Int, result: String) {
-                                        verifyUserLogin(code, result)
-                                    }
-                                })
+                            hideBindButton()
+                            hideGMButton()
+                            FlyFunGame.getInstance().login(this@DemoActivity, false, object : ICallback {
+                                override fun onResult(code: Int, result: String) {
+                                    verifyUserLogin(code, result)
+                                }
+                            })
                         }
                     }
                 })
@@ -111,34 +165,34 @@ class DemoActivity : Activity(), View.OnClickListener {
                     //创建新角色
                     cacheRoleInfo = null
                     cacheRoleInfo = CacheRoleInfo.setDemoRoleInfo(
-                        this@DemoActivity,
-                        FlyFunGame.getInstance().getCurrentUserId()
+                            this@DemoActivity,
+                            FlyFunGame.getInstance().getCurrentUserId()
                     )
                     FlyFunGame.getInstance().roleCreate(this@DemoActivity, getGameRoleInfo())
                 }
                 4 -> FlyFunGame.getInstance().roleLauncher(this@DemoActivity, getGameRoleInfo())
                 5 -> FlyFunGame.getInstance().roleUpgrade(this@DemoActivity, getGameRoleInfo())
                 6 -> FlyFunGame.getInstance()
-                    .charge(this@DemoActivity, getGameChargeInfo(), object : ICallback {
-                        override fun onResult(code: Int, result: String) {
-                            if (code == 0) {
-                                Toast.toastInfo(this@DemoActivity, "(demo提示)支付流程完成")
-                            } else {
-                                Toast.toastInfo(this@DemoActivity, "(demo提示)支付失败，$result")
+                        .charge(this@DemoActivity, getGameChargeInfo(), object : ICallback {
+                            override fun onResult(code: Int, result: String) {
+                                if (code == 0) {
+                                    Toast.toastInfo(this@DemoActivity, "(demo提示)支付流程完成")
+                                } else {
+                                    Toast.toastInfo(this@DemoActivity, "(demo提示)支付失败，$result")
+                                }
                             }
-                        }
 
-                    })
+                        })
                 7 -> FlyFunGame.getInstance()
-                    .openBindAccount(this@DemoActivity, object : ICallback {
-                        override fun onResult(code: Int, result: String) {
-                            if (code == 0) {
-                                Toast.toastInfo(this@DemoActivity, "(demo提示)绑定账号成功")
-                            } else {
-                                Toast.toastInfo(this@DemoActivity, "(demo提示)绑定账号失败")
+                        .openBindAccount(this@DemoActivity, object : ICallback {
+                            override fun onResult(code: Int, result: String) {
+                                if (code == 0) {
+                                    Toast.toastInfo(this@DemoActivity, "(demo提示)绑定账号成功")
+                                } else {
+                                    Toast.toastInfo(this@DemoActivity, "(demo提示)绑定账号失败")
+                                }
                             }
-                        }
-                    })
+                        })
                 8 -> FlyFunGame.getInstance().openGmCenter(this@DemoActivity, object : ICallback {
                     override fun onResult(code: Int, result: String) {
                         if (code != 0) {
@@ -147,6 +201,9 @@ class DemoActivity : Activity(), View.OnClickListener {
                     }
                 })
                 9 -> createCrash()
+                10 -> ShareImpl.getInstance().invokeShare2Fb(this@DemoActivity)
+                11 -> imageView.setImageBitmap(ScreenShotUtils.getScreenShot(this@DemoActivity))
+
             }
         }
     }
@@ -268,28 +325,18 @@ class DemoActivity : Activity(), View.OnClickListener {
         FlyFunGame.getInstance().onConfigurationChanged(this, newConfig)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        FlyFunGame.getInstance()
-            .onRequestPermissionsResult(this, requestCode, permissions, grantResults)
+        FlyFunGame.getInstance().onRequestPermissionsResult(this, requestCode, permissions, grantResults)
     }
 
-    fun getAllLogFiles(path: String): ArrayList<String> {
-        val fileTree = File(path).walk()
-        val logs = arrayListOf<String>()
-        fileTree.maxDepth(1)
-            .filter { it.isFile }
-            .filter { it.extension == "log" }
-            .forEach {
-                logs.add(it.name)
-            }
-        return logs
+    private fun requestPermissions(activity: Activity, permissions: Array<String>) {
+        for (permission in permissions) {
+            Logger.d("check permission : $permission , result : ${ContextCompat.checkSelfPermission(activity, permission)}")
+            Logger.d("$permission rationale : ${ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)}")
+        }
     }
-
 
     private fun verifyUserLogin(code: Int, result: String) {
         //用户登录校验，请尽量放在服务端处理
@@ -307,16 +354,16 @@ class DemoActivity : Activity(), View.OnClickListener {
                     //登录校验成功后判断当前用户是否已经绑定平台账号，否则在游戏中显示入口
                     if (FlyFunGame.getInstance().hasBindAccount()) {
                         //隐藏绑定平台账号的入口
-                        DemoButtons.hideBindButton()
+                        hideBindButton()
                     } else {
                         //显示绑定平台账号的入口
-                        DemoButtons.showBindButton()
+                        showBindButton()
                     }
                     //登录校验成功后判断SDK客服中心是否开启，否则在游戏中关闭对应的入口
                     if (FlyFunGame.getInstance().isGmCenterEnable()) {
-                        DemoButtons.showGMButton()
+                        showGMButton()
                     } else {
-                        DemoButtons.hideGMButton()
+                        hideGMButton()
                     }
                 } else {
                     Toast.toastInfo(this, "(demo提示)登录失败，用户信息校验失败")
@@ -327,5 +374,41 @@ class DemoActivity : Activity(), View.OnClickListener {
         } else {
             Toast.toastInfo(this, "(demo提示)$result")
         }
+    }
+
+    private fun hideBindButton() {
+        bindButton.apply {
+            if (visibility == View.VISIBLE) {
+                visibility = View.GONE
+            }
+        }
+    }
+
+    private fun showBindButton() {
+        bindButton.apply {
+            if (visibility == View.GONE) {
+                visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun hideGMButton() {
+        gmButton.apply {
+            if (visibility == View.VISIBLE) {
+                visibility = View.GONE
+            }
+        }
+    }
+
+    private fun showGMButton() {
+        gmButton.apply {
+            if (visibility == View.GONE) {
+                visibility = View.VISIBLE
+            }
+        }
+    }
+
+    companion object {
+        private const val APP_SECRET = "xxxx"
     }
 }

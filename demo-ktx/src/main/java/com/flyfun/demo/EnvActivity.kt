@@ -14,13 +14,6 @@ import cn.flyfun.support.jarvis.Toast
  * Created on 2020/12/7
  */
 class EnvActivity : Activity(), View.OnClickListener {
-
-    companion object {
-        fun start(activity: Activity) {
-            activity.startActivity(Intent(activity, EnvActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -52,6 +45,12 @@ class EnvActivity : Activity(), View.OnClickListener {
         v?.apply {
             HostModelUtils.setHostModel(this@EnvActivity, tag as Int)
             Toast.toastInfo(this@EnvActivity,"接口环境切换成功，重启应用后生效")
+        }
+    }
+
+    companion object {
+        fun start(activity: Activity) {
+            activity.startActivity(Intent(activity, EnvActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         }
     }
 }

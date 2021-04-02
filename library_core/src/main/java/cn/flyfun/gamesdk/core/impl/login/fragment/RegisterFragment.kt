@@ -95,18 +95,22 @@ class RegisterFragment : Fragment() {
                         val pwd = etPassword?.editText?.text.toString()
                         if (TextUtils.isEmpty(userName)) {
                             Toast.toastInfo(requireActivity(), resources.getString(ResUtils.getResId(requireActivity(), "ffg_tips_empty_email", "string")))
+                            loginImpl?.hideLoadingDialog()
                             return
                         }
                         if (TextUtils.isEmpty(pwd)) {
                             Toast.toastInfo(requireActivity(), resources.getString(ResUtils.getResId(requireActivity(), "ffg_tips_empty_password", "string")))
+                            loginImpl?.hideLoadingDialog()
                             return
                         }
                         if (!EditTextUtils.filterEmail(userName)) {
                             Toast.toastInfo(requireActivity(), resources.getString(ResUtils.getResId(requireActivity(), "ffg_tips_email_format_error", "string")))
+                            loginImpl?.hideLoadingDialog()
                             return
                         }
                         if (pwd.length <= 5) {
                             Toast.toastInfo(requireActivity(), resources.getString(ResUtils.getResId(requireActivity(), "ffg_tips_password_format_error", "string")))
+                            loginImpl?.hideLoadingDialog()
                             return
                         }
                         loginImpl?.userRegister(userName, pwd)

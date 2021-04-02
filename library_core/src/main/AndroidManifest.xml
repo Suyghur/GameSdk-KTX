@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cn.flyfun.ktx.gamesdk.core">
+    package="cn.flyfun.gamesdk.core">
     <!-- 网络权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="com.farsitel.bazaar.permission.PAY_THROUGH_BAZAAR" />
 
@@ -14,7 +15,6 @@
         android:allowBackup="true"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
-
         <activity
             android:name="cn.flyfun.gamesdk.core.impl.login.LoginActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
@@ -35,6 +35,9 @@
             android:screenOrientation="portrait"
             android:theme="@style/FlyFunGameTheme"
             android:windowSoftInputMode="adjustResize|stateHidden|stateVisible" />
+        <activity
+            android:name="cn.flyfun.support.permission.PermissionsGrantActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" />
 
         <receiver
             android:name="com.adjust.sdk.AdjustReferrerReceiver"
@@ -45,5 +48,4 @@
             </intent-filter>
         </receiver>
     </application>
-
 </manifest>

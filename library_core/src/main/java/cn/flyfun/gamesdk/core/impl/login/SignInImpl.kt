@@ -35,7 +35,6 @@ class SignInImpl constructor(val activity: LoginActivity, val callback: ISignInC
     private var fbCallback: CallbackManager? = null
     private var googleSignInClient: GoogleSignInClient? = null
 
-
     init {
         this.fbCallback = CallbackManager.Factory.create()
         val googleServerClientId = ParamsUtils.getGoogleClientId(activity)

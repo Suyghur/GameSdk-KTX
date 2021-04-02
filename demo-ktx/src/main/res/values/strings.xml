@@ -9,4 +9,5 @@
     <string name="default_web_client_id" translatable="false">38153824010-b2e01psqkkf8kfcr26d5l98pgana4pi2.apps.googleusercontent.com</string>
     <string name="com.crashlytics.RequireBuildId" translatable="false">true</string>
     <string name="com.google.firebase.crashlytics.mapping_file_id" translatable="false">00000000000000000000000000000000</string>
+    <string name="title_feature_test">FeatureTest</string>
 </resources>

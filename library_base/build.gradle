@@ -9,7 +9,6 @@ android {
     defaultConfig {
         minSdkVersion MIN_SDK_VERSION
         targetSdkVersion TARGET_SDK_VERSION
-        packageBuildConfig(false)
     }
 
     buildTypes {
@@ -17,6 +16,10 @@ android {
             minifyEnabled true
             proguardFiles 'proguard-rules.pro'
         }
+    }
+
+    buildFeatures {
+        buildConfig = false
     }
 
     lintOptions {

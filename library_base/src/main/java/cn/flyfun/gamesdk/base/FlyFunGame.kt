@@ -16,6 +16,7 @@ import cn.flyfun.gamesdk.base.entity.GameRoleInfo
 import cn.flyfun.gamesdk.base.internal.ICallback
 import cn.flyfun.gamesdk.base.utils.Logger
 import cn.flyfun.support.AppUtils
+import cn.flyfun.support.jarvis.LogRvds
 
 
 /**
@@ -106,7 +107,11 @@ class FlyFunGame private constructor() {
         }
         Logger.i("FlyFunGameSdk initialize ...")
         isSdkInit = true
-        SdkBridgeManager.call(FunctionName.INITIALIZE, arrayOf(Activity::class.java, Boolean::class.java, ICallback::class.java), arrayOf(activity, isLandscape, callback))
+        SdkBridgeManager.call(
+            FunctionName.INITIALIZE,
+            arrayOf(Activity::class.java, Boolean::class.java, ICallback::class.java),
+            arrayOf(activity, isLandscape, callback)
+        )
     }
 
     /**
@@ -128,7 +133,11 @@ class FlyFunGame private constructor() {
         clickLoginTime = System.currentTimeMillis()
         Logger.i("FlyFunGameSdk login ...")
         Logger.i("当前SDK版本:" + getCurrentSdkVersion())
-        SdkBridgeManager.call(FunctionName.LOGIN, arrayOf(Activity::class.java, Boolean::class.java, ICallback::class.java), arrayOf(activity, isAuto, callback))
+        SdkBridgeManager.call(
+            FunctionName.LOGIN,
+            arrayOf(Activity::class.java, Boolean::class.java, ICallback::class.java),
+            arrayOf(activity, isAuto, callback)
+        )
     }
 
     /**
@@ -175,7 +184,11 @@ class FlyFunGame private constructor() {
         }
         clickChargeTime = System.currentTimeMillis()
         Logger.i("FlyFunGameSdk charge ...")
-        SdkBridgeManager.call(FunctionName.CHARGE, arrayOf(Activity::class.java, GameChargeInfo::class.java, ICallback::class.java), arrayOf(activity, chargeInfo, callback))
+        SdkBridgeManager.call(
+            FunctionName.CHARGE,
+            arrayOf(Activity::class.java, GameChargeInfo::class.java, ICallback::class.java),
+            arrayOf(activity, chargeInfo, callback)
+        )
     }
 
     /**
@@ -359,7 +372,11 @@ class FlyFunGame private constructor() {
             return
         }
         data?.apply {
-            SdkBridgeManager.call(FunctionName.ON_ACTIVITY_RESULT, arrayOf(Activity::class.java, Int::class.java, Int::class.java, Intent::class.java), arrayOf(activity, requestCode, resultCode, this))
+            SdkBridgeManager.call(
+                FunctionName.ON_ACTIVITY_RESULT,
+                arrayOf(Activity::class.java, Int::class.java, Int::class.java, Intent::class.java),
+                arrayOf(activity, requestCode, resultCode, this)
+            )
         }
     }
 
@@ -390,7 +407,11 @@ class FlyFunGame private constructor() {
             Logger.e("onConfigurationChanged error ... SdkBridgeManager is null")
             return
         }
-        SdkBridgeManager.call(FunctionName.ON_CONFIGURATION_CHANGED, arrayOf(Activity::class.java, Configuration::class.java), arrayOf(activity, newConfig))
+        SdkBridgeManager.call(
+            FunctionName.ON_CONFIGURATION_CHANGED,
+            arrayOf(Activity::class.java, Configuration::class.java),
+            arrayOf(activity, newConfig)
+        )
     }
 
     /**
@@ -406,13 +427,15 @@ class FlyFunGame private constructor() {
             Logger.e("onRequestPermissionsResult error ... SdkBridgeManager is null")
             return
         }
-        SdkBridgeManager.call(FunctionName.ON_REQUEST_PERMISSIONS_RESULT, arrayOf(Activity::class.java, Int::class.java, Array<out String>::class.java, Array<Int>::class.java), arrayOf(activity, requestCode, permissions, grantResults))
+        SdkBridgeManager.call(
+            FunctionName.ON_REQUEST_PERMISSIONS_RESULT,
+            arrayOf(Activity::class.java, Int::class.java, Array<out String>::class.java, Array<Int>::class.java),
+            arrayOf(activity, requestCode, permissions, grantResults)
+        )
     }
 
     /**
      * 获取当前用户ID
-     *
-     * @return
      */
     fun getCurrentUserId(): String {
         if (mSdkBridge == null) {
@@ -425,8 +448,6 @@ class FlyFunGame private constructor() {
 
     /**
      * 当前用户是否已绑定平台账号
-     *
-     * @return
      */
     fun hasBindAccount(): Boolean {
         if (mSdkBridge == null) {
@@ -438,8 +459,6 @@ class FlyFunGame private constructor() {
 
     /**
      * 客服中心是否可用
-     *
-     * @return
      */
     fun isGmCenterEnable(): Boolean {
         if (mSdkBridge == null) {
@@ -451,8 +470,6 @@ class FlyFunGame private constructor() {
 
     /**
      * 获取当前SDK版本
-     *
-     * @return
      */
     fun getCurrentSdkVersion(): String {
         if (mSdkBridge == null) {
@@ -462,8 +479,8 @@ class FlyFunGame private constructor() {
         return SdkBridgeManager.callback(FunctionName.GET_CURRENT_SDK_VERSION, emptyArray(), emptyArray()) as String
     }
 
-    fun logHandler(handler: Handler?) {
-        Logger.handler = handler
+    fun logHandler(handler: Handler) {
+        LogRvds.handler = handler
     }
 
     companion object {

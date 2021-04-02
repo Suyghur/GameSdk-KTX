@@ -420,16 +420,16 @@ class SdkBridgeImpl {
             val sign = Md5Utils.encodeByMD5(SdkBackLoginInfo.instance.userId + roleId + serverCode + gameCode + "flyfun")
             val url = StringBuilder()
             url.append(initBean.initGm.url).append("?")
-                .append("sign=").append(URLEncoder.encode(sign, "UTF-8"))
-                .append("&game_code=").append(URLEncoder.encode(gameCode, "UTF-8"))
-                .append("&user_id=").append(URLEncoder.encode(SdkBackLoginInfo.instance.userId, "UTF-8"))
-                .append("&role_id=").append(URLEncoder.encode(roleId, "UTF-8"))
-                .append("&role_name=").append(URLEncoder.encode(roleName, "UTF-8"))
-                .append("&server_code=").append(URLEncoder.encode(serverCode, "UTF-8"))
-                .append("&server_name=").append(URLEncoder.encode(serverName, "UTF-8"))
-                .append("&game_code=").append(URLEncoder.encode(gameCode, "UTF-8"))
-                .append("&user_id=").append(URLEncoder.encode(SdkBackLoginInfo.instance.userId, "UTF-8"))
-                .append("&pic=").append(URLEncoder.encode(initBean.initGm.logoUrl, "UTF-8"))
+                    .append("sign=").append(URLEncoder.encode(sign, "UTF-8"))
+                    .append("&game_code=").append(URLEncoder.encode(gameCode, "UTF-8"))
+                    .append("&user_id=").append(URLEncoder.encode(SdkBackLoginInfo.instance.userId, "UTF-8"))
+                    .append("&role_id=").append(URLEncoder.encode(roleId, "UTF-8"))
+                    .append("&role_name=").append(URLEncoder.encode(roleName, "UTF-8"))
+                    .append("&server_code=").append(URLEncoder.encode(serverCode, "UTF-8"))
+                    .append("&server_name=").append(URLEncoder.encode(serverName, "UTF-8"))
+                    .append("&game_code=").append(URLEncoder.encode(gameCode, "UTF-8"))
+                    .append("&user_id=").append(URLEncoder.encode(SdkBackLoginInfo.instance.userId, "UTF-8"))
+                    .append("&pic=").append(URLEncoder.encode(initBean.initGm.logoUrl, "UTF-8"))
             HybridActivity.start(activity, url.toString())
         }
     }
@@ -469,6 +469,9 @@ class SdkBridgeImpl {
 
     fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         this.mActivity = activity
+        data?.apply {
+            ShareImpl.getInstance().onActivityResult(requestCode, resultCode, this)
+        }
     }
 
     fun onNewIntent(activity: Activity, intent: Intent) {

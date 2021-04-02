@@ -237,18 +237,17 @@ class BindActivity : Activity(), View.OnClickListener, EventEditText.EventEditTe
 
     override fun onViewClick(v: View?) {
         v?.apply {
-            if (this == etPassword?.rightImageView) {
+            if (this == etPassword.rightImageView) {
                 if (!isShowText) {
                     isShowText = true
-                    etPassword!!.rightImageView.setBackgroundResource(imageHide)
-                    etPassword!!.editText.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                    etPassword.rightImageView.setBackgroundResource(imageHide)
+                    etPassword.editText.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
                 } else {
                     isShowText = false
-                    etPassword!!.rightImageView.setBackgroundResource(imageShow)
-                    etPassword!!.editText.inputType =
-                        InputType.TYPE_TEXT_VARIATION_PASSWORD or InputType.TYPE_CLASS_TEXT
+                    etPassword.rightImageView.setBackgroundResource(imageShow)
+                    etPassword.editText.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD or InputType.TYPE_CLASS_TEXT
                 }
-                etPassword?.editText?.setSelection(etPassword!!.editText.length())
+                etPassword.editText.setSelection(etPassword.editText.length())
             }
         }
     }
