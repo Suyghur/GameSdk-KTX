@@ -60,13 +60,7 @@ class ChooseFragment : Fragment(), View.OnClickListener {
     private var isShowText = false
     private var privacyDialog: PrivacyDialog? = null
     private val mEventEditTextListener = object : EventEditText.EventEditTextListener {
-        override fun beforeTextChanged(
-                v: View,
-                s: CharSequence?,
-                start: Int,
-                count: Int,
-                after: Int
-        ) {
+        override fun beforeTextChanged(v: View, s: CharSequence?, start: Int, count: Int, after: Int) {
         }
 
         override fun onTextChanged(v: View, s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -102,19 +96,11 @@ class ChooseFragment : Fragment(), View.OnClickListener {
     }
 
 
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         loginImpl = requireActivity() as LoginActivity
         mInflater = inflater
-        mView = inflater.inflate(
-                ResUtils.getResId(requireActivity(), "ffg_login_choose", "layout"),
-                container,
-                false
-        )
+        mView = inflater.inflate(ResUtils.getResId(requireActivity(), "ffg_login_choose", "layout"), container, false)
         initView(mView)
         return mView
     }
@@ -123,8 +109,7 @@ class ChooseFragment : Fragment(), View.OnClickListener {
         ivCheck = view.findViewById(ResUtils.getResId(requireActivity(), "ffg_iv_check", "id"))
         ivGoogle = view.findViewById(ResUtils.getResId(requireActivity(), "ffg_iv_google", "id"))
         ivGuest = view.findViewById(ResUtils.getResId(requireActivity(), "ffg_iv_guest", "id"))
-        ivFacebook =
-                view.findViewById(ResUtils.getResId(requireActivity(), "ffg_iv_facebook", "id"))
+        ivFacebook = view.findViewById(ResUtils.getResId(requireActivity(), "ffg_iv_facebook", "id"))
 
         imageUp = ResUtils.getResId(requireActivity(), "ffg_pack_up_img", "drawable")
         imageDown = ResUtils.getResId(requireActivity(), "ffg_pack_down_img", "drawable")
@@ -147,60 +132,32 @@ class ChooseFragment : Fragment(), View.OnClickListener {
 
         etAccount = view.findViewById(ResUtils.getResId(requireActivity(), "ffg_et_account", "id"))
         etAccount.apply {
-            leftImageView.setBackgroundResource(
-                    ResUtils.getResId(
-                            requireActivity(),
-                            "ffg_account_img",
-                            "drawable"
-                    )
-            )
+            leftImageView.setBackgroundResource(ResUtils.getResId(requireActivity(), "ffg_account_img", "drawable"))
             rightImageView.setBackgroundResource(imageDown)
-            editText.setHint(
-                    ResUtils.getResId(
-                            requireActivity(),
-                            "ffg_login_account_hint",
-                            "string"
-                    )
-            )
+            editText.setHint(ResUtils.getResId(requireActivity(), "ffg_login_account_hint", "string"))
         }
 
         etPassword = view.findViewById(ResUtils.getResId(requireActivity(), "ffg_et_pwd", "id"))
         etPassword.apply {
-            leftImageView.setBackgroundResource(
-                    ResUtils.getResId(
-                            requireActivity(),
-                            "ffg_password_img",
-                            "drawable"
-                    )
-            )
+            leftImageView.setBackgroundResource(ResUtils.getResId(requireActivity(), "ffg_password_img", "drawable"))
             rightImageView.setBackgroundResource(imageShow)
-            editText.setHint(
-                    ResUtils.getResId(
-                            requireActivity(),
-                            "ffg_login_password1_hint",
-                            "string"
-                    )
-            )
+            editText.setHint(ResUtils.getResId(requireActivity(), "ffg_login_password1_hint", "string"))
             editText.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD or InputType.TYPE_CLASS_TEXT
         }
 
         tvForget = view.findViewById(ResUtils.getResId(requireActivity(), "ffg_tv_forget", "id"))
-        clAgreement =
-                view.findViewById(ResUtils.getResId(requireActivity(), "ffg_cl_agreement", "id"))
+        clAgreement = view.findViewById(ResUtils.getResId(requireActivity(), "ffg_cl_agreement", "id"))
         btnLogin = view.findViewById(ResUtils.getResId(requireActivity(), "ffg_btn_login", "id"))
 
-
-        rlAccountList =
-                view.findViewById(ResUtils.getResId(requireActivity(), "ffg_rl_account_list", "id"))
-        svAccountList =
-                view.findViewById(ResUtils.getResId(requireActivity(), "ffg_sv_account_list", "id"))
-        llAccountList =
-                view.findViewById(ResUtils.getResId(requireActivity(), "ffg_ll_account_list", "id"))
+        rlAccountList = view.findViewById(ResUtils.getResId(requireActivity(), "ffg_rl_account_list", "id"))
+        svAccountList = view.findViewById(ResUtils.getResId(requireActivity(), "ffg_sv_account_list", "id"))
+        llAccountList = view.findViewById(ResUtils.getResId(requireActivity(), "ffg_ll_account_list", "id"))
         rlAccountList.visibility = View.GONE
 
         if (SdkBridgeImpl.initBean.initPrivacy.privacySwitch == 0) {
             ivCheck.visibility = View.GONE
             clAgreement.visibility = View.GONE
+            check = true
         }
 
         initViewAction()
@@ -231,8 +188,7 @@ class ChooseFragment : Fragment(), View.OnClickListener {
     }
 
     private fun autoFillUserInfo() {
-        val temp: MutableList<Session> =
-                SessionUtils.getInstance().getLocalSessionLimit5(requireActivity())
+        val temp: MutableList<Session> = SessionUtils.getInstance().getLocalSessionLimit5(requireActivity())
         if (temp.size == 0) {
             etAccount.rightImageView.visibility = View.GONE
             return
@@ -385,26 +341,40 @@ class ChooseFragment : Fragment(), View.OnClickListener {
                     val userName = etAccount.editText.text.toString()
                     val pwd = etPassword.editText.text.toString()
                     if (TextUtils.isEmpty(userName)) {
-                        Toast.toastInfo(
-                                requireActivity(),
-                                ResUtils.getResString(requireActivity(), "ffg_tips_empty_account")
-                        )
+                        Toast.toastInfo(requireActivity(), ResUtils.getResString(requireActivity(), "ffg_tips_empty_account"))
                         return
                     }
                     if (TextUtils.isEmpty(pwd)) {
-                        Toast.toastInfo(
-                                requireActivity(),
-                                ResUtils.getResString(requireActivity(), "ffg_tips_empty_password")
-                        )
+                        Toast.toastInfo(requireActivity(), ResUtils.getResString(requireActivity(), "ffg_tips_empty_password"))
+                        return
+                    }
+                    if (!check) {
+                        Toast.toastInfo(requireActivity(), ResUtils.getResString(requireActivity(), "ffg_tips_uncheck_privacy"))
                         return
                     }
                     loginImpl.signInImpl?.accountLogin(userName, pwd)
                 }
-                ClickType.ACTION_FACEBOOK_MODE -> loginImpl.signInImpl?.facebookLogin(
-                        requireActivity()
-                )
-                ClickType.ACTION_GOOGLE_MODE -> loginImpl.signInImpl?.googleLogin(requireActivity())
-                ClickType.ACTION_GUEST_MODE -> loginImpl.signInImpl?.guestLogin()
+                ClickType.ACTION_FACEBOOK_MODE -> {
+                    if (!check) {
+                        Toast.toastInfo(requireActivity(), ResUtils.getResString(requireActivity(), "ffg_tips_uncheck_privacy"))
+                        return
+                    }
+                    loginImpl.signInImpl?.facebookLogin(requireActivity())
+                }
+                ClickType.ACTION_GOOGLE_MODE -> {
+                    if (!check) {
+                        Toast.toastInfo(requireActivity(), ResUtils.getResString(requireActivity(), "ffg_tips_uncheck_privacy"))
+                        return
+                    }
+                    loginImpl.signInImpl?.googleLogin(requireActivity())
+                }
+                ClickType.ACTION_GUEST_MODE -> {
+                    if (!check) {
+                        Toast.toastInfo(requireActivity(), ResUtils.getResString(requireActivity(), "ffg_tips_uncheck_privacy"))
+                        return
+                    }
+                    loginImpl.signInImpl?.guestLogin()
+                }
                 ClickType.ACTION_CLICK_AGREEMENT -> {
                     privacyDialog?.apply {
                         if (isShowing) {

@@ -161,8 +161,7 @@ class LoginActivity : FragmentActivity() {
                         SdkBackLoginInfo.instance.userId = jsonObject.getString("user_id")
                         SdkBackLoginInfo.instance.timestamp = jsonObject.getString("timestamp")
                         SdkBackLoginInfo.instance.isRegUser = jsonObject.getInt("is_reg_user")
-                        SdkBackLoginInfo.instance.isBindPlatform =
-                            jsonObject.getInt("is_bind_platform")
+                        SdkBackLoginInfo.instance.isBindPlatform = jsonObject.getInt("is_bind_platform")
                         SdkBackLoginInfo.instance.cpSign = jsonObject.getString("cp_sign")
                         SdkBackLoginInfo.instance.loginType = 0
 
@@ -272,11 +271,7 @@ class LoginActivity : FragmentActivity() {
         etAccount = findViewById(ResUtils.getResId(this, "ffg_et_forget_account", "id"))
         etAccount.apply {
             leftImageView.setBackgroundResource(
-                ResUtils.getResId(
-                    this@LoginActivity,
-                    "ffg_account_img",
-                    "drawable"
-                )
+                ResUtils.getResId(this@LoginActivity, "ffg_account_img", "drawable")
             )
             editText.hint = ResUtils.getResString(this@LoginActivity, "ffg_login_account_hint")
         }
@@ -284,11 +279,7 @@ class LoginActivity : FragmentActivity() {
         etPassword = findViewById(ResUtils.getResId(this, "ffg_et_forget_pwd1", "id"))
         etPassword.apply {
             leftImageView.setBackgroundResource(
-                ResUtils.getResId(
-                    this@LoginActivity,
-                    "ffg_password_img",
-                    "drawable"
-                )
+                ResUtils.getResId(this@LoginActivity, "ffg_password_img", "drawable")
             )
             editText.hint = ResUtils.getResString(this@LoginActivity, "ffg_login_password1_hint")
         }
@@ -296,11 +287,7 @@ class LoginActivity : FragmentActivity() {
         etPassword2 = findViewById(ResUtils.getResId(this, "ffg_et_forget_pwd2", "id"))
         etPassword2.apply {
             leftImageView.setBackgroundResource(
-                ResUtils.getResId(
-                    this@LoginActivity,
-                    "ffg_password_img",
-                    "drawable"
-                )
+                ResUtils.getResId(this@LoginActivity, "ffg_password_img", "drawable")
             )
             editText.hint = ResUtils.getResString(this@LoginActivity, "ffg_login_password2_hint")
         }
@@ -308,21 +295,14 @@ class LoginActivity : FragmentActivity() {
         vcSend = findViewById(ResUtils.getResId(this, "ffg_et_forget_code", "id"))
         vcSend.apply {
             leftImageView.setBackgroundResource(
-                ResUtils.getResId(
-                    this@LoginActivity,
-                    "ffg_email_img",
-                    "drawable"
-                )
+                ResUtils.getResId(this@LoginActivity, "ffg_email_img", "drawable")
             )
             editText.hint = ResUtils.getResString(this@LoginActivity, "ffg_login_input_code_hint")
             textView.setOnClickListener {
                 if (!TextUtils.isEmpty(etAccount.editText.text)) {
                     captchaCode
                 } else {
-                    Toast.toastInfo(
-                        this@LoginActivity,
-                        ResUtils.getResString(this@LoginActivity, "ffg_tips_empty_account")
-                    )
+                    Toast.toastInfo(this@LoginActivity, ResUtils.getResString(this@LoginActivity, "ffg_tips_empty_account"))
                 }
             }
         }
@@ -397,17 +377,11 @@ class LoginActivity : FragmentActivity() {
                         if (userName.length > 15) {
                             userName = userName.substring(0, 15) + "..."
                         }
-                        tips = userName + ResUtils.getResString(
-                            this@LoginActivity,
-                            "ffg_login_tv_login_account"
-                        )
+                        tips = userName + ResUtils.getResString(this@LoginActivity, "ffg_login_tv_login_account")
                     }
-                    LoginType.TYPE_FACEBOOK_LOGIN -> tips =
-                        ResUtils.getResString(this@LoginActivity, "ffg_login_tv_login_facebook")
-                    LoginType.TYPE_GUEST_LOGIN -> tips =
-                        ResUtils.getResString(this@LoginActivity, "ffg_login_tv_login_guest")
-                    LoginType.TYPE_GOOGLE_LOGIN -> tips =
-                        ResUtils.getResString(this@LoginActivity, "ffg_login_tv_login_google")
+                    LoginType.TYPE_FACEBOOK_LOGIN -> tips = ResUtils.getResString(this@LoginActivity, "ffg_login_tv_login_facebook")
+                    LoginType.TYPE_GUEST_LOGIN -> tips = ResUtils.getResString(this@LoginActivity, "ffg_login_tv_login_guest")
+                    LoginType.TYPE_GOOGLE_LOGIN -> tips = ResUtils.getResString(this@LoginActivity, "ffg_login_tv_login_google")
                 }
                 tvTips.text = tips
 
@@ -421,8 +395,7 @@ class LoginActivity : FragmentActivity() {
     private fun changeTimeView(time: Int) {
         vcSend.apply {
             if (time <= 0) {
-                textView.text =
-                    ResUtils.getResString(this@LoginActivity, "ffg_login_btn_get_captcha")
+                textView.text = ResUtils.getResString(this@LoginActivity, "ffg_login_btn_get_captcha")
                 textView.isEnabled = true
             } else {
                 textView.text = time.toString() + "s"
@@ -441,34 +414,17 @@ class LoginActivity : FragmentActivity() {
                 val paddingTop = tabView1.paddingTop
                 val paddingEnd = tabView1.paddingEnd
                 val paddingBottom = tabView1.paddingBottom
-                ViewCompat.setBackground(
-                    tabView1,
-                    ContextCompat.getDrawable(tabView1.context, left)
+                ViewCompat.setBackground(tabView1, ContextCompat.getDrawable(tabView1.context, left)
                 )
-                ViewCompat.setPaddingRelative(
-                    tabView1,
-                    paddingStart,
-                    paddingTop,
-                    paddingEnd,
-                    paddingBottom
-                )
+                ViewCompat.setPaddingRelative(tabView1, paddingStart, paddingTop, paddingEnd, paddingBottom)
             }
             if (tabView2 != null) {
                 val paddingStart = tabView2.paddingStart
                 val paddingTop = tabView2.paddingTop
                 val paddingEnd = tabView2.paddingEnd
                 val paddingBottom = tabView2.paddingBottom
-                ViewCompat.setBackground(
-                    tabView2,
-                    ContextCompat.getDrawable(tabView2.context, right)
-                )
-                ViewCompat.setPaddingRelative(
-                    tabView2,
-                    paddingStart,
-                    paddingTop,
-                    paddingEnd,
-                    paddingBottom
-                )
+                ViewCompat.setBackground(tabView2, ContextCompat.getDrawable(tabView2.context, right))
+                ViewCompat.setPaddingRelative(tabView2, paddingStart, paddingTop, paddingEnd, paddingBottom)
             }
         }
     }

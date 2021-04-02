@@ -34,6 +34,7 @@
     <string name="ffg_tips_password_format_error">密碼格式不正確</string>
     <string name="ffg_tips_email_format_error">信箱格式異常，請重新輸入</string>
     <string name="ffg_privacy_title">網路連線遊戲服務定型化契約</string>
+    <string name="ffg_tips_uncheck_privacy">請先閱讀並同意定型化契約</string>
 
     <string name="ffg_login_register_error">帳號注册异常</string>
 
