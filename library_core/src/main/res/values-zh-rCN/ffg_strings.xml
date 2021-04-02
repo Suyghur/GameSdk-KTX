@@ -33,6 +33,7 @@
     <string name="ffg_tips_empty_code">验证码不能为空</string>
     <string name="ffg_tips_password_format_error">密码格式不正确</string>
     <string name="ffg_tips_email_format_error">邮箱格式异常，请重新输入</string>
+    <string name="ffg_tips_uncheck_privacy">请先阅读并同意定型化契约</string>
     <string name="ffg_privacy_title">游戏用户服务协议和隐私政策</string>
 
     <string name="ffg_login_register_error">账号注册异常</string>

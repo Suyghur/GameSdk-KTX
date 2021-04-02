@@ -1,10 +1,12 @@
 package cn.flyfun.gamesdk.core.ui
 
 import android.content.Context
+import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
 import cn.flyfun.gamesdk.core.ui.dialog.InitDialog
 import cn.flyfun.gamesdk.core.ui.dialog.TipsDialog
+import cn.flyfun.support.ui.circleprogress.CircleProgressLoading
 import cn.flyfun.support.ui.circleprogress.CircleProgressLoadingDialog
 
 
@@ -50,8 +52,11 @@ object DialogUtils {
 
     fun showCircleProgressLoadingDialog(context: Context, msg: String): CircleProgressLoadingDialog {
         return if (TextUtils.isEmpty(msg)) {
+            val bundle = Bundle()
+            bundle.putIntArray(CircleProgressLoading.CIRCLE_COLOR, intArrayOf(255, 220, 220, 220))
             CircleProgressLoadingDialog.Builder(context)
                     .hasMessage(false)
+                    .setLoadingDialogParams(bundle)
                     .build()
         } else {
             CircleProgressLoadingDialog.Builder(context)
