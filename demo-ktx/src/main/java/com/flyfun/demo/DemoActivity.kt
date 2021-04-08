@@ -2,23 +2,17 @@ package com.flyfun.demo
 
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.os.*
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.View
 import android.widget.*
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+
 import cn.flyfun.gamesdk.base.FlyFunGame
 import cn.flyfun.gamesdk.base.entity.GameChargeInfo
 import cn.flyfun.gamesdk.base.entity.GameRoleInfo
 import cn.flyfun.gamesdk.base.internal.ICallback
-import cn.flyfun.gamesdk.base.utils.Logger
 import cn.flyfun.gamesdk.core.impl.ShareImpl
 import cn.flyfun.gamesdk.core.utils.ScreenShotUtils
 import cn.flyfun.support.encryption.Md5Utils
@@ -331,12 +325,6 @@ class DemoActivity : Activity(), View.OnClickListener {
         FlyFunGame.getInstance().onRequestPermissionsResult(this, requestCode, permissions, grantResults)
     }
 
-    private fun requestPermissions(activity: Activity, permissions: Array<String>) {
-        for (permission in permissions) {
-            Logger.d("check permission : $permission , result : ${ContextCompat.checkSelfPermission(activity, permission)}")
-            Logger.d("$permission rationale : ${ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)}")
-        }
-    }
 
     private fun verifyUserLogin(code: Int, result: String) {
         //用户登录校验，请尽量放在服务端处理

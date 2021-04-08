@@ -10,10 +10,12 @@ object Logger {
 
     private const val TAG: String = "flyfun_game"
 
+    @JvmStatic
     fun i(any: Any) {
         LogRvds.i(TAG, any)
     }
 
+    @JvmStatic
     fun e(msg: String) {
         LogRvds.e(TAG, msg)
     }
