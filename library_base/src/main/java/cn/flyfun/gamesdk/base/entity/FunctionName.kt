@@ -31,4 +31,5 @@ object FunctionName {
     const val GET_CURRENT_SDK_VERSION = "getCurrentSdkVersion"
     const val HAS_BIND_ACCOUNT = "hasBindAccount"
     const val IS_GM_CENTER_ENABLE = "isGmCenterEnable"
+    const val INVOKE_SDK_SHARING = "invokeSdkSharing"
 }

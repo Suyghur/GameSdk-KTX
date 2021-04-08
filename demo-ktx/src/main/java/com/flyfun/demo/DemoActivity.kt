@@ -13,8 +13,6 @@ import cn.flyfun.gamesdk.base.FlyFunGame
 import cn.flyfun.gamesdk.base.entity.GameChargeInfo
 import cn.flyfun.gamesdk.base.entity.GameRoleInfo
 import cn.flyfun.gamesdk.base.internal.ICallback
-import cn.flyfun.gamesdk.core.impl.ShareImpl
-import cn.flyfun.gamesdk.core.utils.ScreenShotUtils
 import cn.flyfun.support.encryption.Md5Utils
 import cn.flyfun.support.jarvis.Toast
 import org.json.JSONException
@@ -195,9 +193,11 @@ class DemoActivity : Activity(), View.OnClickListener {
                     }
                 })
                 9 -> createCrash()
-                10 -> ShareImpl.getInstance().invokeShare2Fb(this@DemoActivity)
-                11 -> imageView.setImageBitmap(ScreenShotUtils.getScreenShot(this@DemoActivity))
-
+                10 -> FlyFunGame.getInstance().invokeSdkSharing(this@DemoActivity, object : ICallback {
+                    override fun onResult(code: Int, result: String) {
+                        Toast.toastInfo(this@DemoActivity, "(demo提示)$result")
+                    }
+                })
             }
         }
     }

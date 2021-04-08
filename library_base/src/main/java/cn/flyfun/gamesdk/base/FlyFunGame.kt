@@ -108,9 +108,9 @@ class FlyFunGame private constructor() {
         Logger.i("FlyFunGameSdk initialize ...")
         isSdkInit = true
         SdkBridgeManager.call(
-            FunctionName.INITIALIZE,
-            arrayOf(Activity::class.java, Boolean::class.java, ICallback::class.java),
-            arrayOf(activity, isLandscape, callback)
+                FunctionName.INITIALIZE,
+                arrayOf(Activity::class.java, Boolean::class.java, ICallback::class.java),
+                arrayOf(activity, isLandscape, callback)
         )
     }
 
@@ -134,9 +134,9 @@ class FlyFunGame private constructor() {
         Logger.i("FlyFunGameSdk login ...")
         Logger.i("当前SDK版本:" + getCurrentSdkVersion())
         SdkBridgeManager.call(
-            FunctionName.LOGIN,
-            arrayOf(Activity::class.java, Boolean::class.java, ICallback::class.java),
-            arrayOf(activity, isAuto, callback)
+                FunctionName.LOGIN,
+                arrayOf(Activity::class.java, Boolean::class.java, ICallback::class.java),
+                arrayOf(activity, isAuto, callback)
         )
     }
 
@@ -185,9 +185,9 @@ class FlyFunGame private constructor() {
         clickChargeTime = System.currentTimeMillis()
         Logger.i("FlyFunGameSdk charge ...")
         SdkBridgeManager.call(
-            FunctionName.CHARGE,
-            arrayOf(Activity::class.java, GameChargeInfo::class.java, ICallback::class.java),
-            arrayOf(activity, chargeInfo, callback)
+                FunctionName.CHARGE,
+                arrayOf(Activity::class.java, GameChargeInfo::class.java, ICallback::class.java),
+                arrayOf(activity, chargeInfo, callback)
         )
     }
 
@@ -278,6 +278,15 @@ class FlyFunGame private constructor() {
         }
         Logger.i("FlyFunGameSdk openGmCenter ...")
         SdkBridgeManager.call(FunctionName.OPEN_GM_CENTER, arrayOf(Activity::class.java, ICallback::class.java), arrayOf(activity, callback))
+    }
+
+    fun invokeSdkSharing(activity: Activity, callback: ICallback) {
+        if (mSdkBridge == null) {
+            Logger.e("invokeSdkSharing error ... SdkBridgeManager is null")
+            return
+        }
+        Logger.i("FlyFunGameSdk call2share ...")
+        SdkBridgeManager.call(FunctionName.INVOKE_SDK_SHARING, arrayOf(Activity::class.java, ICallback::class.java), arrayOf(activity, callback))
     }
 
     /**
@@ -373,9 +382,9 @@ class FlyFunGame private constructor() {
         }
         data?.apply {
             SdkBridgeManager.call(
-                FunctionName.ON_ACTIVITY_RESULT,
-                arrayOf(Activity::class.java, Int::class.java, Int::class.java, Intent::class.java),
-                arrayOf(activity, requestCode, resultCode, this)
+                    FunctionName.ON_ACTIVITY_RESULT,
+                    arrayOf(Activity::class.java, Int::class.java, Int::class.java, Intent::class.java),
+                    arrayOf(activity, requestCode, resultCode, this)
             )
         }
     }
@@ -408,9 +417,9 @@ class FlyFunGame private constructor() {
             return
         }
         SdkBridgeManager.call(
-            FunctionName.ON_CONFIGURATION_CHANGED,
-            arrayOf(Activity::class.java, Configuration::class.java),
-            arrayOf(activity, newConfig)
+                FunctionName.ON_CONFIGURATION_CHANGED,
+                arrayOf(Activity::class.java, Configuration::class.java),
+                arrayOf(activity, newConfig)
         )
     }
 
@@ -428,9 +437,9 @@ class FlyFunGame private constructor() {
             return
         }
         SdkBridgeManager.call(
-            FunctionName.ON_REQUEST_PERMISSIONS_RESULT,
-            arrayOf(Activity::class.java, Int::class.java, Array<out String>::class.java, Array<Int>::class.java),
-            arrayOf(activity, requestCode, permissions, grantResults)
+                FunctionName.ON_REQUEST_PERMISSIONS_RESULT,
+                arrayOf(Activity::class.java, Int::class.java, Array<out String>::class.java, Array<Int>::class.java),
+                arrayOf(activity, requestCode, permissions, grantResults)
         )
     }
 
@@ -468,6 +477,7 @@ class FlyFunGame private constructor() {
         return SdkBridgeManager.callback(FunctionName.IS_GM_CENTER_ENABLE, emptyArray(), emptyArray()) as Boolean
     }
 
+
     /**
      * 获取当前SDK版本
      */
@@ -494,6 +504,13 @@ class FlyFunGame private constructor() {
 
         private object FlyFunGameHolder {
             val INSTANCE: FlyFunGame = FlyFunGame()
+        }
+
+        /**
+         * 防止单例对象在反序列化时重新生成对象
+         */
+        private fun readResolve(): Any {
+            return FlyFunGameHolder.INSTANCE
         }
     }
 }

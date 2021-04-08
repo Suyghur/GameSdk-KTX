@@ -434,6 +434,27 @@ class SdkBridgeImpl {
         }
     }
 
+    fun invokeSdkSharing(activity: Activity, callback: ICallback) {
+        this.mActivity = activity
+        if (!initState) {
+            Logger.e("调用分享失败，SDK未初始化或初始化失败")
+            callback.onResult(-1, "调用分享失败，SDK初始化异常或未初始化")
+            return
+        }
+        if (TextUtils.isEmpty(SdkBackLoginInfo.instance.userId)) {
+            Logger.e("调用分享失败，用户未登录或登录失败")
+            callback.onResult(-1, "调用分享失败，用户未登录或登录失败")
+            return
+        }
+        if (roleInfo == null) {
+            Logger.e("调用分享失败，角色未登录或登录失败")
+            callback.onResult(-1, "调用分享失败，用户未登录或登录失败")
+            return
+        }
+
+        ShareImpl.getInstance().invokeShare2Fb(activity, callback)
+    }
+
     fun onStart(activity: Activity) {
         this.mActivity = activity
     }

@@ -1,27 +1,23 @@
 package cn.flyfun.gamesdk.core.impl
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import cn.flyfun.gamesdk.base.internal.ICallback
 import cn.flyfun.gamesdk.base.utils.Logger
 import cn.flyfun.gamesdk.core.entity.ClickType
-import cn.flyfun.gamesdk.core.entity.LoginType
 import cn.flyfun.gamesdk.core.entity.SdkBackLoginInfo
 import cn.flyfun.gamesdk.core.utils.ScreenShotUtils
-import cn.flyfun.support.jarvis.Toast
-import com.facebook.*
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.FacebookSdk
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.facebook.share.Sharer
 import com.facebook.share.model.ShareHashtag
-import com.facebook.share.model.ShareLinkContent
 import com.facebook.share.model.SharePhoto
 import com.facebook.share.model.SharePhotoContent
-import com.facebook.share.widget.MessageDialog
 import com.facebook.share.widget.ShareDialog
-import org.json.JSONException
-import org.json.JSONObject
 import java.util.*
 
 /**
@@ -37,16 +33,15 @@ class ShareImpl {
         this.fbCallback = CallbackManager.Factory.create()
     }
 
-    fun invokeShare2Fb(activity: Activity) {
-        Logger.d("invokeShare2Fb")
+    fun invokeShare2Fb(activity: Activity, callback: ICallback) {
         if (SdkBackLoginInfo.instance.loginType != ClickType.ACTION_FACEBOOK_MODE) {
-            startLogin(activity)
+            startLogin(activity, callback)
         } else {
-            startShare(activity)
+            startShare(activity, callback)
         }
     }
 
-    private fun startShare(activity: Activity) {
+    private fun startShare(activity: Activity, callback: ICallback) {
         val bitmap = ScreenShotUtils.joinQRCode(activity, ScreenShotUtils.getScreenShot(activity))
         val photo = SharePhoto.Builder()
                 .setBitmap(bitmap)
@@ -61,17 +56,17 @@ class ShareImpl {
             registerCallback(fbCallback, object : FacebookCallback<Sharer.Result> {
                 override fun onSuccess(result: Sharer.Result?) {
                     Logger.d("facebook share onSuccess")
-                    Toast.toastInfo(activity, "Facebook sharing success")
+                    callback.onResult(0, "Facebook sharing success")
                 }
 
                 override fun onCancel() {
                     Logger.e("facebook share onCancel")
-                    Toast.toastInfo(activity, "You have canceled sharing to Facebook")
+                    callback.onResult(0, "You have canceled sharing to Facebook")
                 }
 
                 override fun onError(error: FacebookException?) {
                     Logger.e("facebook share onError ${error?.message}")
-                    Toast.toastInfo(activity, "Facebook sharing has some error")
+                    callback.onResult(0, "Facebook sharing has some error")
                 }
             })
             show(content)
@@ -81,7 +76,7 @@ class ShareImpl {
         }
     }
 
-    private fun startLogin(activity: Activity) {
+    private fun startLogin(activity: Activity, callback: ICallback) {
         if (!FacebookSdk.isInitialized()) {
             return
         }
@@ -90,20 +85,21 @@ class ShareImpl {
         LoginManager.getInstance().registerCallback(fbCallback, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult?) {
                 result?.apply {
-
                     Logger.d("Facebook授权成功")
-                    startShare(activity)
+                    startShare(activity, callback)
                 }
             }
 
             override fun onCancel() {
                 Logger.d("Facebook取消授权")
+                callback.onResult(-1, "Facebook取消授权")
             }
 
             override fun onError(error: FacebookException?) {
                 error?.apply {
-                    Logger.e("Facebook授权失败 : " + this.message)
+                    Logger.e("Facebook授权失败 : $message")
                 }
+                callback.onResult(-1, "Facebook授权失败")
             }
         })
         LoginManager.getInstance().logInWithReadPermissions(activity, Collections.singletonList("public_profile"))
