@@ -9,15 +9,19 @@ android {
     defaultConfig {
         minSdkVersion MIN_SDK_VERSION
         targetSdkVersion TARGET_SDK_VERSION
-        packageBuildConfig(false)
     }
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled MINIFY_ENABLE
             proguardFiles 'proguard-rules.pro'
         }
     }
+
+    buildFeatures {
+        buildConfig = false
+    }
+
 
     lintOptions {
         abortOnError false
@@ -41,7 +45,7 @@ android {
 dependencies {
     implementation 'androidx.core:core-ktx:1.3.2'
 //    compileOnly 'cn.flyfun.zap:zap-ktx:0.0.1'
-    api files('libs/flyfun_support_1.0.3.jar')
+    api files('libs/flyfun_support_1.0.4.jar')
 }
 
 apply from: 'buildJar.gradle'

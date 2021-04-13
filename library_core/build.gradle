@@ -4,7 +4,7 @@ plugins {
     id 'com.github.dcendents.android-maven'
 }
 
-group="com.flyfungame.git.client"
+group = "com.flyfungame.git.client"
 
 android {
     compileSdkVersion COMPILE_SDK_VERSION
@@ -12,7 +12,6 @@ android {
     defaultConfig {
         minSdkVersion MIN_SDK_VERSION
         targetSdkVersion TARGET_SDK_VERSION
-        packageBuildConfig(false)
 
         ndk {
             // 设置支持的SO库架构
@@ -22,10 +21,15 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled MINIFY_ENABLE
             proguardFiles 'proguard-rules.pro'
         }
     }
+
+    buildFeatures {
+        buildConfig = false
+    }
+
     lintOptions {
         abortOnError false
     }
@@ -65,7 +69,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
     implementation 'com.adjust.sdk:adjust-android:4.25.0'
-    implementation 'com.google.firebase:firebase-analytics-ktx:18.0.2'
+    implementation 'com.google.firebase:firebase-analytics-ktx:18.0.3'
     implementation 'com.google.firebase:firebase-crashlytics-ktx:17.4.1'
 //    implementation 'cn.flyfun.zap:zap-ktx:0.0.1'
 

@@ -16,6 +16,7 @@ import cn.flyfun.gamesdk.base.entity.GameRoleInfo
 import cn.flyfun.gamesdk.base.internal.ICallback
 import cn.flyfun.gamesdk.base.utils.Logger
 import cn.flyfun.support.AppUtils
+import cn.flyfun.support.jarvis.LogRvds
 
 
 /**
@@ -463,7 +464,7 @@ class FlyFunGame private constructor() {
     }
 
     fun logHandler(handler: Handler?) {
-        Logger.handler = handler
+        LogRvds.handler = handler
     }
 
     companion object {

@@ -34,6 +34,7 @@ import cn.flyfun.support.encryption.Md5Utils
 import cn.flyfun.support.gaid.GAIDUtils
 import cn.flyfun.support.ui.circleprogress.CircleProgressLoadingDialog
 import java.net.URLEncoder
+import java.util.concurrent.atomic.AtomicInteger
 
 
 /**
@@ -64,7 +65,7 @@ class SdkBridgeImpl {
     private var initLoadingDialog: CircleProgressLoadingDialog? = null
 
     @Volatile
-    private var timeCount = 0
+    private var timeCount = AtomicInteger(0)
 
     fun attachBaseContext(application: Application, context: Context) {
         GAIDUtils.initGoogleAdid(application) { code: Int, _ ->
@@ -117,7 +118,7 @@ class SdkBridgeImpl {
                     try {
                         Logger.e("还未读取到aaid，延迟1s初始化，$hasReadAaid")
                         Thread.sleep(1000)
-                        timeCount++
+                        timeCount.getAndIncrement()
                     } catch (e: InterruptedException) {
                         e.printStackTrace()
                     }
@@ -146,8 +147,9 @@ class SdkBridgeImpl {
                         SdkRequest.getInstance().downloadImageFile(activity, initBean.initGm.iconUrl)
                     }
                 } else {
-                    callback.onResult(-1, "SDK初始化失败")
                     initState = false
+                    Logger.d("FlyFunGameSdk initialize failed")
+                    callback.onResult(-1, "SDK初始化失败")
                 }
             }
         })
@@ -166,6 +168,11 @@ class SdkBridgeImpl {
                         isShowAppDialog = SPUtils.getDialogShowTimeByTypeId(activity, "#")
                     }
                     if (!isShowAppDialog) {
+                        Logger.d("本次不展示公告")
+                        initState = true
+                        isShowInitDialog = false
+                        Logger.d("FlyFunGameSdk initialize success")
+                        callback.onResult(0, "SDK初始化成功")
                         return
                     }
 
@@ -173,6 +180,7 @@ class SdkBridgeImpl {
                         initState = true
                         isShowInitDialog = false
                         initNoticeDialog?.dismiss()
+                        Logger.d("FlyFunGameSdk initialize success")
                         callback.onResult(0, "SDK初始化成功")
                     }
 
@@ -183,12 +191,15 @@ class SdkBridgeImpl {
                 Logger.e("公告解析出现异常")
                 initState = true
                 isShowInitDialog = false
+                Logger.d("FlyFunGameSdk initialize success")
                 callback.onResult(0, "SDK初始化成功")
             }
         } else {
-            //没有公告
+            //公告配置异常或没有公告
+            Logger.e("公告配置异常或没有公告")
             initState = true
             isShowInitDialog = false
+            Logger.d("FlyFunGameSdk initialize success")
             callback.onResult(0, "SDK初始化成功")
         }
     }
@@ -420,16 +431,16 @@ class SdkBridgeImpl {
             val sign = Md5Utils.encodeByMD5(SdkBackLoginInfo.instance.userId + roleId + serverCode + gameCode + "flyfun")
             val url = StringBuilder()
             url.append(initBean.initGm.url).append("?")
-                .append("sign=").append(URLEncoder.encode(sign, "UTF-8"))
-                .append("&game_code=").append(URLEncoder.encode(gameCode, "UTF-8"))
-                .append("&user_id=").append(URLEncoder.encode(SdkBackLoginInfo.instance.userId, "UTF-8"))
-                .append("&role_id=").append(URLEncoder.encode(roleId, "UTF-8"))
-                .append("&role_name=").append(URLEncoder.encode(roleName, "UTF-8"))
-                .append("&server_code=").append(URLEncoder.encode(serverCode, "UTF-8"))
-                .append("&server_name=").append(URLEncoder.encode(serverName, "UTF-8"))
-                .append("&game_code=").append(URLEncoder.encode(gameCode, "UTF-8"))
-                .append("&user_id=").append(URLEncoder.encode(SdkBackLoginInfo.instance.userId, "UTF-8"))
-                .append("&pic=").append(URLEncoder.encode(initBean.initGm.logoUrl, "UTF-8"))
+                    .append("sign=").append(URLEncoder.encode(sign, "UTF-8"))
+                    .append("&game_code=").append(URLEncoder.encode(gameCode, "UTF-8"))
+                    .append("&user_id=").append(URLEncoder.encode(SdkBackLoginInfo.instance.userId, "UTF-8"))
+                    .append("&role_id=").append(URLEncoder.encode(roleId, "UTF-8"))
+                    .append("&role_name=").append(URLEncoder.encode(roleName, "UTF-8"))
+                    .append("&server_code=").append(URLEncoder.encode(serverCode, "UTF-8"))
+                    .append("&server_name=").append(URLEncoder.encode(serverName, "UTF-8"))
+                    .append("&game_code=").append(URLEncoder.encode(gameCode, "UTF-8"))
+                    .append("&user_id=").append(URLEncoder.encode(SdkBackLoginInfo.instance.userId, "UTF-8"))
+                    .append("&pic=").append(URLEncoder.encode(initBean.initGm.logoUrl, "UTF-8"))
             HybridActivity.start(activity, url.toString())
         }
     }

@@ -1,7 +1,11 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
 
-    // 各种版本相关信息都配在此处
+    // 混淆开关
+    ext.MINIFY_ENABLE = true
+    // ndk版本
+    ext.NDK_VERSION = '21.3.6528147'
+    // kotlin版本
     ext.KOTLIN_VERSION = '1.4.20'
     // compileSdkVersion
     ext.COMPILE_SDK_VERSION = 30
@@ -17,7 +21,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.android.tools.build:gradle:4.1.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         //jitpack

@@ -29,7 +29,7 @@ object SPUtils {
             return true
         }
 
-        val lastTime = DateUtils.getStrByDataTime(time, "")
+        val lastTime = DateUtils.getStrByDataTime(time, DateUtils.YYYY_MM_DD)
         val nowTime = Date()
         if (lastTime.day != nowTime.day) {
             //写入时间
