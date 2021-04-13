@@ -293,7 +293,7 @@ class SdkBridgeImpl {
             callback.onResult(-1, "支付失败，支付信息对象拷贝过程异常")
             return
         }
-        ChargeImpl.instance.invokeCharge(activity, innerChargeInfo, object : ImplCallback {
+        InAppBillingImpl.getInstance().start(activity, innerChargeInfo, null, false, object : ImplCallback {
             override fun onSuccess(result: String) {
                 val params = HashMap<String, Any>()
                 params["order_id"] = innerChargeInfo.orderId.toString()
@@ -349,7 +349,7 @@ class SdkBridgeImpl {
             roleName = roleInfo.roleName
             roleLevel = roleInfo.roleLevel
             rewardId = initBean.initReward.rewardId
-            PreRewardImpl.getInstance().checkPreReward(activity, this)
+            InAppBillingImpl.getInstance().start(activity, null, this, true, null)
         }
     }
 

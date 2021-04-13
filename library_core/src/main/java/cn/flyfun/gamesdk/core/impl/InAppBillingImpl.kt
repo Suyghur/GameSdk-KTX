@@ -5,6 +5,7 @@ import android.content.Context
 import android.text.TextUtils
 import cn.flyfun.gamesdk.base.entity.GameChargeInfo
 import cn.flyfun.gamesdk.base.utils.Logger
+import cn.flyfun.gamesdk.core.entity.GameRewardInfo
 import cn.flyfun.gamesdk.core.entity.ResultInfo
 import cn.flyfun.gamesdk.core.internal.IRequestCallback
 import cn.flyfun.gamesdk.core.internal.ImplCallback
@@ -33,32 +34,37 @@ import org.json.JSONObject
  * 6、服务端校验购买结果并通知CP发货
  * 7、消耗该笔订单
  */
-class ChargeImpl private constructor() {
-
-    companion object {
-        val instance: ChargeImpl by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
-            ChargeImpl()
-        }
-    }
+class InAppBillingImpl private constructor() {
 
     private var payLoadingDialog: CircleProgressLoadingDialog? = null
     private var callback: ImplCallback? = null
 
     private var chargeInfo: GameChargeInfo? = null
+    private var rewardInfo: GameRewardInfo? = null
     private var billingClient: BillingClient? = null
 
-    fun invokeCharge(activity: Activity, chargeInfo: GameChargeInfo, callback: ImplCallback) {
+    private var isPreReward = false
+
+    fun start(activity: Activity, chargeInfo: GameChargeInfo?, rewardInfo: GameRewardInfo?, isPreReward: Boolean, callback: ImplCallback?) {
         this.chargeInfo = chargeInfo
+        this.rewardInfo = rewardInfo
         this.callback = callback
+        this.isPreReward = isPreReward
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(activity) != ConnectionResult.SUCCESS) {
             Toast.toastInfo(activity, "Your phone or Google account does not support In-app Billing")
-            callback.onFailed("谷歌Iab支付服务不可用")
+            callback?.onFailed("谷歌Iab支付服务不可用")
             return
         }
-        dismissDialog()
-        payLoadingDialog = DialogUtils.showCircleProgressLoadingDialog(activity, ResUtils.getResString(activity, "ffg_charge_loading_tips"))
-        payLoadingDialog?.show()
-        getOrderId(activity)
+        if (isPreReward) {
+            //预注册奖励
+            initializeBillingClient(activity)
+        } else {
+            //支付
+            dismissDialog()
+            payLoadingDialog = DialogUtils.showCircleProgressLoadingDialog(activity, ResUtils.getResString(activity, "ffg_charge_loading_tips"))
+            payLoadingDialog?.show()
+            getOrderId(activity)
+        }
     }
 
     /**
@@ -89,7 +95,6 @@ class ChargeImpl private constructor() {
             }
 
         })
-
     }
 
 
@@ -103,14 +108,21 @@ class ChargeImpl private constructor() {
             //谷歌支付结果在这里回调
             logBillingResult("onPurchasesUpdated", billingResult)
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                if (list == null) {
+                if (list != null && list.size > 0) {
+                    Logger.d("size :${list.size}")
+                    for (purchase in list) {
+                        if (isPreReward && rewardInfo != null) {
+                            if (purchase.sku == rewardInfo!!.rewardId)
+                            //预注册
+                                notifyReward2Backend(activity)
+                        } else {
+                            //支付
+                            notifyOrder2Backend(activity, chargeInfo!!.orderId + "", list[0].originalJson, list[0].signature, false)
+                        }
+                    }
+                } else {
                     callback?.onFailed("支付失败")
                     disConnection()
-                }
-                list?.apply {
-                    if (size > 0) {
-                        notifyOrder2Backend(activity, chargeInfo!!.orderId + "", this[0].originalJson, this[0].signature, false)
-                    }
                 }
             } else {
                 callback?.onFailed("支付异常")
@@ -134,7 +146,11 @@ class ChargeImpl private constructor() {
                     override fun onBillingSetupFinished(billingResult: BillingResult) {
                         logBillingResult("onBillingSetupFinished", billingResult)
                         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                            queryPurchases(activity)
+                            if (isPreReward) {
+                                queryReward(activity)
+                            } else {
+                                queryPurchases(activity)
+                            }
                         } else {
                             callback?.onFailed("连接Google Play服务异常")
                         }
@@ -146,6 +162,29 @@ class ChargeImpl private constructor() {
                     }
 
                 })
+            }
+        }
+    }
+
+    private fun queryReward(activity: Activity) {
+        billingClient?.apply {
+            val list = queryPurchases(BillingClient.SkuType.INAPP).purchasesList
+            list?.apply {
+                if (size > 0) {
+                    Logger.d("查询预注册奖励状态")
+                    for (reward in this) {
+                        Logger.d("reward : $reward")
+                        if (rewardInfo?.rewardId == reward.sku) {
+                            //通知发货
+                            rewardInfo?.purchaseToken = reward.purchaseToken
+                            notifyReward2Backend(activity)
+                        } else {
+                            Logger.d("不是预注册奖励订单，断开连接")
+                            disConnection()
+                            return
+                        }
+                    }
+                }
             }
         }
     }
@@ -174,8 +213,10 @@ class ChargeImpl private constructor() {
                     }
                     //消耗完了再发起支付
                     try {
+                        Logger.d("消耗完了再发起支付")
                         val cache = SPUtils.getCacheOrder(activity)
                         if (!TextUtils.isEmpty(cache)) {
+                            Logger.d("本地缓存信息:$cache")
                             var cacheOrderId = ""
                             var cacheOriginalJson = ""
                             val cacheJson = JSONObject(cache)
@@ -251,6 +292,17 @@ class ChargeImpl private constructor() {
         }
     }
 
+
+    private fun consumeAsync(purchaseToken: String) {
+        val consumeParams = ConsumeParams.newBuilder().setPurchaseToken(purchaseToken).build()
+        billingClient?.apply {
+            consumeAsync(consumeParams) { billingResult, _ ->
+                logBillingResult("onConsumeResponse", billingResult)
+                disConnection()
+            }
+        }
+    }
+
     /**
      * 消耗订单
      *
@@ -278,6 +330,16 @@ class ChargeImpl private constructor() {
                 }
             }
         }
+    }
+
+    private fun notifyReward2Backend(activity: Activity) {
+        SdkRequest.getInstance().notifyReward(activity, rewardInfo!!, object : IRequestCallback {
+            override fun onResponse(resultInfo: ResultInfo) {
+                rewardInfo!!.purchaseToken?.apply {
+                    consumeAsync(this)
+                }
+            }
+        })
     }
 
     private fun notifyOrder2Backend(activity: Activity, orderId: String, originalJson: String, signature: String, isCache: Boolean) {
@@ -330,6 +392,17 @@ class ChargeImpl private constructor() {
                 dismiss()
                 payLoadingDialog = null
             }
+        }
+    }
+
+    companion object {
+
+        fun getInstance(): InAppBillingImpl {
+            return InAppBillingImplHolder.INSTANCE
+        }
+
+        private object InAppBillingImplHolder {
+            val INSTANCE = InAppBillingImpl()
         }
     }
 }
