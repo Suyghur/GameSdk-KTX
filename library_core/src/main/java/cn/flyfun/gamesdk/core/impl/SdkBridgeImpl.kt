@@ -34,6 +34,7 @@ import cn.flyfun.support.encryption.Md5Utils
 import cn.flyfun.support.gaid.GAIDUtils
 import cn.flyfun.support.ui.circleprogress.CircleProgressLoadingDialog
 import java.net.URLEncoder
+import java.util.concurrent.atomic.AtomicInteger
 
 
 /**
@@ -64,7 +65,7 @@ class SdkBridgeImpl {
     private var initLoadingDialog: CircleProgressLoadingDialog? = null
 
     @Volatile
-    private var timeCount = 0
+    private var timeCount = AtomicInteger(0)
 
     fun attachBaseContext(application: Application, context: Context) {
         GAIDUtils.initGoogleAdid(application) { code: Int, _ ->
@@ -117,7 +118,7 @@ class SdkBridgeImpl {
                     try {
                         Logger.e("还未读取到aaid，延迟1s初始化，$hasReadAaid")
                         Thread.sleep(1000)
-                        timeCount++
+                        timeCount.getAndIncrement()
                     } catch (e: InterruptedException) {
                         e.printStackTrace()
                     }
@@ -146,8 +147,9 @@ class SdkBridgeImpl {
                         SdkRequest.getInstance().downloadImageFile(activity, initBean.initGm.iconUrl)
                     }
                 } else {
-                    callback.onResult(-1, "SDK初始化失败")
                     initState = false
+                    Logger.d("FlyFunGameSdk initialize failed")
+                    callback.onResult(-1, "SDK初始化失败")
                 }
             }
         })
@@ -166,6 +168,11 @@ class SdkBridgeImpl {
                         isShowAppDialog = SPUtils.getDialogShowTimeByTypeId(activity, "#")
                     }
                     if (!isShowAppDialog) {
+                        Logger.d("本次不展示公告")
+                        initState = true
+                        isShowInitDialog = false
+                        Logger.d("FlyFunGameSdk initialize success")
+                        callback.onResult(0, "SDK初始化成功")
                         return
                     }
 
@@ -173,6 +180,7 @@ class SdkBridgeImpl {
                         initState = true
                         isShowInitDialog = false
                         initNoticeDialog?.dismiss()
+                        Logger.d("FlyFunGameSdk initialize success")
                         callback.onResult(0, "SDK初始化成功")
                     }
 
@@ -183,12 +191,15 @@ class SdkBridgeImpl {
                 Logger.e("公告解析出现异常")
                 initState = true
                 isShowInitDialog = false
+                Logger.d("FlyFunGameSdk initialize success")
                 callback.onResult(0, "SDK初始化成功")
             }
         } else {
-            //没有公告
+            //公告配置异常或没有公告
+            Logger.e("公告配置异常或没有公告")
             initState = true
             isShowInitDialog = false
+            Logger.d("FlyFunGameSdk initialize success")
             callback.onResult(0, "SDK初始化成功")
         }
     }
@@ -434,27 +445,6 @@ class SdkBridgeImpl {
         }
     }
 
-    fun invokeSdkSharing(activity: Activity, callback: ICallback) {
-        this.mActivity = activity
-        if (!initState) {
-            Logger.e("调用分享失败，SDK未初始化或初始化失败")
-            callback.onResult(-1, "调用分享失败，SDK初始化异常或未初始化")
-            return
-        }
-        if (TextUtils.isEmpty(SdkBackLoginInfo.instance.userId)) {
-            Logger.e("调用分享失败，用户未登录或登录失败")
-            callback.onResult(-1, "调用分享失败，用户未登录或登录失败")
-            return
-        }
-        if (roleInfo == null) {
-            Logger.e("调用分享失败，角色未登录或登录失败")
-            callback.onResult(-1, "调用分享失败，用户未登录或登录失败")
-            return
-        }
-
-        ShareImpl.getInstance().invokeShare2Fb(activity, callback)
-    }
-
     fun onStart(activity: Activity) {
         this.mActivity = activity
     }
@@ -490,9 +480,6 @@ class SdkBridgeImpl {
 
     fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         this.mActivity = activity
-        data?.apply {
-            ShareImpl.getInstance().onActivityResult(requestCode, resultCode, this)
-        }
     }
 
     fun onNewIntent(activity: Activity, intent: Intent) {

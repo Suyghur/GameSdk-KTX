@@ -193,11 +193,6 @@ class DemoActivity : Activity(), View.OnClickListener {
                     }
                 })
                 9 -> createCrash()
-                10 -> FlyFunGame.getInstance().invokeSdkSharing(this@DemoActivity, object : ICallback {
-                    override fun onResult(code: Int, result: String) {
-                        Toast.toastInfo(this@DemoActivity, "(demo提示)$result")
-                    }
-                })
             }
         }
     }

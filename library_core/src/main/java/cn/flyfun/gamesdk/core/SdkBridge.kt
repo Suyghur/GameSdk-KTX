@@ -105,11 +105,6 @@ class SdkBridge constructor(context: Context) {
         mImpl?.openGmCenter(activity, callback)
     }
 
-    fun invokeSdkSharing(activity: Activity, callback: ICallback) {
-        this.mActivity = activity
-        mImpl?.invokeSdkSharing(activity, callback)
-    }
-
     fun onStart(activity: Activity) {
         this.mActivity = activity
         mImpl?.onStart(activity)

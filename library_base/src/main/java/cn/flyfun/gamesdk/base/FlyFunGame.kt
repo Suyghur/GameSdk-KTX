@@ -280,15 +280,6 @@ class FlyFunGame private constructor() {
         SdkBridgeManager.call(FunctionName.OPEN_GM_CENTER, arrayOf(Activity::class.java, ICallback::class.java), arrayOf(activity, callback))
     }
 
-    fun invokeSdkSharing(activity: Activity, callback: ICallback) {
-        if (mSdkBridge == null) {
-            Logger.e("invokeSdkSharing error ... SdkBridgeManager is null")
-            return
-        }
-        Logger.i("FlyFunGameSdk call2share ...")
-        SdkBridgeManager.call(FunctionName.INVOKE_SDK_SHARING, arrayOf(Activity::class.java, ICallback::class.java), arrayOf(activity, callback))
-    }
-
     /**
      * 同步游戏Activity的onStart
      *
