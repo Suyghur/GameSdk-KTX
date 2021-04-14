@@ -18,6 +18,8 @@ import cn.flyfun.gamesdk.core.entity.bean.InitBean
 import cn.flyfun.gamesdk.core.fama.EventSubject
 import cn.flyfun.gamesdk.core.fama.channel.adjust.AdjustImpl
 import cn.flyfun.gamesdk.core.fama.channel.firebase.FirebaseImpl
+import cn.flyfun.gamesdk.core.impl.iab.ChargeImpl
+import cn.flyfun.gamesdk.core.impl.iab.PreRewardImpl
 import cn.flyfun.gamesdk.core.impl.login.LoginActivity
 import cn.flyfun.gamesdk.core.internal.IRequestCallback
 import cn.flyfun.gamesdk.core.internal.ImplCallback
@@ -293,7 +295,7 @@ class SdkBridgeImpl {
             callback.onResult(-1, "支付失败，支付信息对象拷贝过程异常")
             return
         }
-        InAppBillingImpl.getInstance().start(activity, innerChargeInfo, null, false, object : ImplCallback {
+        ChargeImpl.getInstance().charge(activity, innerChargeInfo, object : ImplCallback {
             override fun onSuccess(result: String) {
                 val params = HashMap<String, Any>()
                 params["order_id"] = innerChargeInfo.orderId.toString()
@@ -311,7 +313,27 @@ class SdkBridgeImpl {
             override fun onFailed(result: String) {
                 callback.onResult(-1, result)
             }
+
         })
+//        InAppBillingImpl.getInstance().start(activity, innerChargeInfo, null, false, object : ImplCallback {
+//            override fun onSuccess(result: String) {
+//                val params = HashMap<String, Any>()
+//                params["order_id"] = innerChargeInfo.orderId.toString()
+//                params["price"] = innerChargeInfo.price
+//                params["role_id"] = innerChargeInfo.roleId.toString()
+//                params["role_name"] = innerChargeInfo.roleName.toString()
+//                params["server_code"] = innerChargeInfo.serverCode.toString()
+//                params["server_name"] = innerChargeInfo.serverName.toString()
+//                with(eventSubject) {
+//                    onCharge(activity, params)
+//                }
+//                callback.onResult(0, result)
+//            }
+//
+//            override fun onFailed(result: String) {
+//                callback.onResult(-1, result)
+//            }
+//        })
     }
 
     fun roleCreate(activity: Activity, roleInfo: GameRoleInfo) {
@@ -349,7 +371,8 @@ class SdkBridgeImpl {
             roleName = roleInfo.roleName
             roleLevel = roleInfo.roleLevel
             rewardId = initBean.initReward.rewardId
-            InAppBillingImpl.getInstance().start(activity, null, this, true, null)
+//            InAppBillingImpl.getInstance().start(activity, null, this, true, null)
+            PreRewardImpl.getInstance().checkPreReward(activity, this)
         }
     }
 
