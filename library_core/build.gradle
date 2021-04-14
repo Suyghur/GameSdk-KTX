@@ -66,7 +66,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx:18.0.3'
     implementation 'com.google.firebase:firebase-crashlytics-ktx:17.4.1'
 
-    api files('libs/flyfun_base_1.1.6.jar')
+    api files('libs/flyfun_base_1.1.7.jar')
 //    api project(':library_base')
 }
 

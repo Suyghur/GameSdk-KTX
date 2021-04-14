@@ -150,7 +150,6 @@ class SdkBridgeImpl {
                     }
                 } else {
                     initState = false
-                    Logger.d("FlyFunGameSdk initialize failed")
                     callback.onResult(-1, "SDK初始化失败")
                 }
             }
@@ -170,10 +169,8 @@ class SdkBridgeImpl {
                         isShowAppDialog = SPUtils.getDialogShowTimeByTypeId(activity, "#")
                     }
                     if (!isShowAppDialog) {
-                        Logger.d("本次不展示公告")
                         initState = true
                         isShowInitDialog = false
-                        Logger.d("FlyFunGameSdk initialize success")
                         callback.onResult(0, "SDK初始化成功")
                         return
                     }
@@ -182,10 +179,8 @@ class SdkBridgeImpl {
                         initState = true
                         isShowInitDialog = false
                         initNoticeDialog?.dismiss()
-                        Logger.d("FlyFunGameSdk initialize success")
                         callback.onResult(0, "SDK初始化成功")
                     }
-
                     initNoticeDialog?.show()
                 }
             } catch (e: Exception) {
@@ -193,15 +188,13 @@ class SdkBridgeImpl {
                 Logger.e("公告解析出现异常")
                 initState = true
                 isShowInitDialog = false
-                Logger.d("FlyFunGameSdk initialize success")
                 callback.onResult(0, "SDK初始化成功")
             }
         } else {
             //公告配置异常或没有公告
-            Logger.e("公告配置异常或没有公告")
+            Logger.d("公告配置异常或没有公告")
             initState = true
             isShowInitDialog = false
-            Logger.d("FlyFunGameSdk initialize success")
             callback.onResult(0, "SDK初始化成功")
         }
     }
@@ -315,25 +308,6 @@ class SdkBridgeImpl {
             }
 
         })
-//        InAppBillingImpl.getInstance().start(activity, innerChargeInfo, null, false, object : ImplCallback {
-//            override fun onSuccess(result: String) {
-//                val params = HashMap<String, Any>()
-//                params["order_id"] = innerChargeInfo.orderId.toString()
-//                params["price"] = innerChargeInfo.price
-//                params["role_id"] = innerChargeInfo.roleId.toString()
-//                params["role_name"] = innerChargeInfo.roleName.toString()
-//                params["server_code"] = innerChargeInfo.serverCode.toString()
-//                params["server_name"] = innerChargeInfo.serverName.toString()
-//                with(eventSubject) {
-//                    onCharge(activity, params)
-//                }
-//                callback.onResult(0, result)
-//            }
-//
-//            override fun onFailed(result: String) {
-//                callback.onResult(-1, result)
-//            }
-//        })
     }
 
     fun roleCreate(activity: Activity, roleInfo: GameRoleInfo) {
@@ -371,7 +345,6 @@ class SdkBridgeImpl {
             roleName = roleInfo.roleName
             roleLevel = roleInfo.roleLevel
             rewardId = initBean.initReward.rewardId
-//            InAppBillingImpl.getInstance().start(activity, null, this, true, null)
             PreRewardImpl.getInstance().checkPreReward(activity, this)
         }
     }
