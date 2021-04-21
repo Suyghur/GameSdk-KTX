@@ -88,8 +88,10 @@ class LoginActivity : FragmentActivity() {
                         return
                     }
                     session?.apply {
-                        showLoadingDialog()
-                        userAutoLogin()
+                        if (!this@LoginActivity.isFinishing) {
+                            showLoadingDialog()
+                            userAutoLogin()
+                        }
                     }
                 }
             }
@@ -117,8 +119,7 @@ class LoginActivity : FragmentActivity() {
                         SdkBackLoginInfo.instance.userId = jsonObject.getString("user_id")
                         SdkBackLoginInfo.instance.timestamp = jsonObject.getString("timestamp")
                         SdkBackLoginInfo.instance.isRegUser = jsonObject.getInt("is_reg_user")
-                        SdkBackLoginInfo.instance.isBindPlatform =
-                            jsonObject.getInt("is_bind_platform")
+                        SdkBackLoginInfo.instance.isBindPlatform = jsonObject.getInt("is_bind_platform")
                         SdkBackLoginInfo.instance.cpSign = jsonObject.getString("cp_sign")
                         SdkBackLoginInfo.instance.loginType = loginParams.getInt("login_type")
 
@@ -184,8 +185,8 @@ class LoginActivity : FragmentActivity() {
                     } catch (e: JSONException) {
                         e.printStackTrace()
                         Toast.toastInfo(
-                            this@LoginActivity,
-                            ResUtils.getResString(this@LoginActivity, "ffg_login_register_error")
+                                this@LoginActivity,
+                                ResUtils.getResString(this@LoginActivity, "ffg_login_register_error")
                         )
                         hideLoadingDialog()
                         implCallback?.onFailed("账号注册异常")
@@ -194,10 +195,7 @@ class LoginActivity : FragmentActivity() {
                     if (!TextUtils.isEmpty(resultInfo.msg)) {
                         Toast.toastInfo(this@LoginActivity, resultInfo.msg)
                     } else {
-                        Toast.toastInfo(
-                            this@LoginActivity,
-                            ResUtils.getResString(this@LoginActivity, "ffg_login_register_error")
-                        )
+                        Toast.toastInfo(this@LoginActivity, ResUtils.getResString(this@LoginActivity, "ffg_login_register_error"))
                     }
                     implCallback?.onFailed("账号注册异常")
                     hideLoadingDialog()
@@ -265,38 +263,30 @@ class LoginActivity : FragmentActivity() {
 
         val ivLogo = findViewById<ImageView>(ResUtils.getResId(this, "ffg_iv_login_logo", "id"))
         val logoName = Md5Utils.encodeByMD5(SdkBridgeImpl.initBean.initGm.iconUrl) + ".png"
-        if (File("${this@LoginActivity.getExternalFilesDir(".cache")!!.absolutePath}/$logoName").exists()){
+        if (File("${this@LoginActivity.getExternalFilesDir(".cache")!!.absolutePath}/$logoName").exists()) {
             ivLogo.setImageBitmap(getLocalBitmap("${this@LoginActivity.getExternalFilesDir(".cache")!!.absolutePath}/$logoName"))
         }
         etAccount = findViewById(ResUtils.getResId(this, "ffg_et_forget_account", "id"))
         etAccount.apply {
-            leftImageView.setBackgroundResource(
-                ResUtils.getResId(this@LoginActivity, "ffg_account_img", "drawable")
-            )
+            leftImageView.setBackgroundResource(ResUtils.getResId(this@LoginActivity, "ffg_account_img", "drawable"))
             editText.hint = ResUtils.getResString(this@LoginActivity, "ffg_login_account_hint")
         }
 
         etPassword = findViewById(ResUtils.getResId(this, "ffg_et_forget_pwd1", "id"))
         etPassword.apply {
-            leftImageView.setBackgroundResource(
-                ResUtils.getResId(this@LoginActivity, "ffg_password_img", "drawable")
-            )
+            leftImageView.setBackgroundResource(ResUtils.getResId(this@LoginActivity, "ffg_password_img", "drawable"))
             editText.hint = ResUtils.getResString(this@LoginActivity, "ffg_login_password1_hint")
         }
 
         etPassword2 = findViewById(ResUtils.getResId(this, "ffg_et_forget_pwd2", "id"))
         etPassword2.apply {
-            leftImageView.setBackgroundResource(
-                ResUtils.getResId(this@LoginActivity, "ffg_password_img", "drawable")
-            )
+            leftImageView.setBackgroundResource(ResUtils.getResId(this@LoginActivity, "ffg_password_img", "drawable"))
             editText.hint = ResUtils.getResString(this@LoginActivity, "ffg_login_password2_hint")
         }
 
         vcSend = findViewById(ResUtils.getResId(this, "ffg_et_forget_code", "id"))
         vcSend.apply {
-            leftImageView.setBackgroundResource(
-                ResUtils.getResId(this@LoginActivity, "ffg_email_img", "drawable")
-            )
+            leftImageView.setBackgroundResource(ResUtils.getResId(this@LoginActivity, "ffg_email_img", "drawable"))
             editText.hint = ResUtils.getResString(this@LoginActivity, "ffg_login_input_code_hint")
             textView.setOnClickListener {
                 if (!TextUtils.isEmpty(etAccount.editText.text)) {
@@ -432,24 +422,24 @@ class LoginActivity : FragmentActivity() {
     private val captchaCode: Unit
         get() {
             SdkRequest.getInstance()
-                .getCaptcha(this, etAccount.editText.text.toString(), object : IRequestCallback {
-                    override fun onResponse(resultInfo: ResultInfo) {
-                        if (resultInfo.code == 0) {
-                            if (TextUtils.isEmpty(resultInfo.msg)) {
-                                Toast.toastInfo(this@LoginActivity, "驗證碼已發送，請注意查收")
+                    .getCaptcha(this, etAccount.editText.text.toString(), object : IRequestCallback {
+                        override fun onResponse(resultInfo: ResultInfo) {
+                            if (resultInfo.code == 0) {
+                                if (TextUtils.isEmpty(resultInfo.msg)) {
+                                    Toast.toastInfo(this@LoginActivity, "驗證碼已發送，請注意查收")
+                                } else {
+                                    Toast.toastInfo(this@LoginActivity, resultInfo.msg)
+                                }
+                                changeTimeNum()
                             } else {
-                                Toast.toastInfo(this@LoginActivity, resultInfo.msg)
-                            }
-                            changeTimeNum()
-                        } else {
-                            if (TextUtils.isEmpty(resultInfo.msg)) {
-                                Toast.toastInfo(this@LoginActivity, "驗證碼發送异常，請稍後再試")
-                            } else {
-                                Toast.toastInfo(this@LoginActivity, resultInfo.msg)
+                                if (TextUtils.isEmpty(resultInfo.msg)) {
+                                    Toast.toastInfo(this@LoginActivity, "驗證碼發送异常，請稍後再試")
+                                } else {
+                                    Toast.toastInfo(this@LoginActivity, resultInfo.msg)
+                                }
                             }
                         }
-                    }
-                })
+                    })
         }
 
     private fun changeTimeNum() {
@@ -500,26 +490,26 @@ class LoginActivity : FragmentActivity() {
             return
         }
         SdkRequest.getInstance()
-            .forgetPassword(this, userName, pwd, code, object : IRequestCallback {
-                override fun onResponse(resultInfo: ResultInfo) {
-                    if (resultInfo.code == 0) {
-                        hideForgetView()
-                        if (TextUtils.isEmpty(resultInfo.msg)) {
-                            return
+                .forgetPassword(this, userName, pwd, code, object : IRequestCallback {
+                    override fun onResponse(resultInfo: ResultInfo) {
+                        if (resultInfo.code == 0) {
+                            hideForgetView()
+                            if (TextUtils.isEmpty(resultInfo.msg)) {
+                                return
+                            } else {
+                                Toast.toastInfo(this@LoginActivity, resultInfo.msg)
+                            }
+                            signInImpl?.accountLogin(userName, pwd)
                         } else {
-                            Toast.toastInfo(this@LoginActivity, resultInfo.msg)
-                        }
-                        signInImpl?.accountLogin(userName, pwd)
-                    } else {
-                        if (TextUtils.isEmpty(resultInfo.msg)) {
-                            return
-                        } else {
-                            Toast.toastInfo(this@LoginActivity, resultInfo.msg)
+                            if (TextUtils.isEmpty(resultInfo.msg)) {
+                                return
+                            } else {
+                                Toast.toastInfo(this@LoginActivity, resultInfo.msg)
+                            }
                         }
                     }
-                }
 
-            })
+                })
     }
 
 
@@ -552,7 +542,7 @@ class LoginActivity : FragmentActivity() {
                 val v = currentFocus
                 if (isShouldHideInput(v, it)) {
                     val imm =
-                        this@LoginActivity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                            this@LoginActivity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(v!!.windowToken, 0)
                 }
                 return super.dispatchTouchEvent(it)
@@ -644,10 +634,10 @@ class LoginActivity : FragmentActivity() {
             isCancelLogin = false
             implCallback = callback
             activity.startActivity(
-                Intent(
-                    activity,
-                    LoginActivity::class.java
-                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    Intent(
+                            activity,
+                            LoginActivity::class.java
+                    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         }
     }
