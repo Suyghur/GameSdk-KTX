@@ -11,7 +11,7 @@ object SdkBridgeManager {
 
     var sdkBridge: Any? = null
 
-    var clzBridge: Class<*>? = null
+    private var clzBridge: Class<*>? = null
 
 
     fun getSdkBridgeManager(context: Context?): Any? {

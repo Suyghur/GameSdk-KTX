@@ -42,7 +42,7 @@ class AdjustImpl : IEventObserver {
             return
         }
 
-        val config = AdjustConfig(context, appToken, AdjustConfig.ENVIRONMENT_PRODUCTION)
+        val config = AdjustConfig(context, appToken, AdjustConfig.ENVIRONMENT_SANDBOX)
         config.setLogLevel(LogLevel.VERBOSE)
         Adjust.onCreate(config)
         addCommonSessionParams(context)

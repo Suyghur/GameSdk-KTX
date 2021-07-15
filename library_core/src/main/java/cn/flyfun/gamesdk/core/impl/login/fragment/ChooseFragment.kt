@@ -77,13 +77,11 @@ class ChooseFragment : Fragment(), View.OnClickListener {
                     if (!isShowText) {
                         isShowText = true
                         etPassword.rightImageView.setBackgroundResource(imageHide)
-                        etPassword.editText.inputType =
-                                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                        etPassword.editText.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
                     } else {
                         isShowText = false
                         etPassword.rightImageView.setBackgroundResource(imageShow)
-                        etPassword.editText.inputType =
-                                InputType.TYPE_TEXT_VARIATION_PASSWORD or InputType.TYPE_CLASS_TEXT
+                        etPassword.editText.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD or InputType.TYPE_CLASS_TEXT
                     }
                     etPassword.editText.setSelection(etPassword.editText.length())
                 }
@@ -262,7 +260,7 @@ class ChooseFragment : Fragment(), View.OnClickListener {
                 //添加线
                 val line = View(requireActivity())
                 line.layoutParams =
-                        LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2)
+                    LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2)
                 line.setBackgroundColor(Color.parseColor("#4D505050"))
                 llAccountList.apply {
                     if (childCount > 0) {
@@ -272,40 +270,40 @@ class ChooseFragment : Fragment(), View.OnClickListener {
 
                 //添加账号
                 val item = mInflater.inflate(
-                        ResUtils.getResId(
-                                requireActivity(),
-                                "ffg_account_list_item",
-                                "layout"
-                        ), null
+                    ResUtils.getResId(
+                        requireActivity(),
+                        "ffg_account_list_item",
+                        "layout"
+                    ), null
                 )
                 item?.apply {
                     val tvAccountName = findViewById<TextView>(
-                            ResUtils.getResId(
-                                    requireActivity(),
-                                    "ffg_tv_name",
-                                    "id"
-                            )
+                        ResUtils.getResId(
+                            requireActivity(),
+                            "ffg_tv_name",
+                            "id"
+                        )
                     )
                     tvAccountName.gravity = Gravity.CENTER_VERTICAL
                     tvAccountName.setPadding(15, 0, 0, 0)
                     tvAccountName.text = session.userName
                     val ivDelete = findViewById<ImageView>(
-                            ResUtils.getResId(
-                                    requireActivity(),
-                                    "ffg_iv_delete",
-                                    "id"
-                            )
+                        ResUtils.getResId(
+                            requireActivity(),
+                            "ffg_iv_delete",
+                            "id"
+                        )
                     )
                     setOnClickListener(AccountItemClick(session))
                     ivDelete.setOnClickListener(AccountDeleteClick(session))
                     layoutParams =
-                            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height)
+                        LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height)
                     llAccountList.addView(this, llAccountList.childCount)
                 }
             }
         }
         svAccountList.layoutParams =
-                RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, maxHeight)
+            RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, maxHeight)
     }
 
     fun hideAccountList(): Boolean {

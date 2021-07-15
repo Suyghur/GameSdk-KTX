@@ -164,7 +164,9 @@ class ChargeImpl : InAppBilling() {
      */
     private fun querySkuDetails(activity: Activity) {
         val skus = ArrayList<String>()
+//        skus.add("${chargeInfo!!.productId}")
         skus.add("${chargeInfo!!.productId}")
+        skus.add("com.ceshiyingyong.1")
         val params = SkuDetailsParams.newBuilder().setType(BillingClient.SkuType.INAPP).setSkusList(skus).build()
         billingClient?.apply {
             querySkuDetailsAsync(params) { billingResult, list ->
